@@ -26,6 +26,7 @@ import {
 import { performOCR } from "@/lib/sanxt";
 import { getMailTemplateHtml } from "@/components/mailTemplate";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 export default function Component() {
   const [sanxtNotes, setSanxtNotes] = useState("");
@@ -383,20 +384,22 @@ export default function Component() {
               </CardTitle>
               <div className="flex space-x-2">
                 <Button variant="outline" size="icon">
-                  <a
+                  <Link
                     href={`https://outlook.office.com/mail/deeplink/compose?to=NetworkPerformanceTeam@virginmedia.ie;Mail2TicketUpdate@libertyglobal.com&subject=${subject}`}
                     target="_blank"
                   >
                     <Mail className="h-4 w-4" />
-                  </a>
+                  </Link>
                 </Button>
                 <Button variant="outline" size="icon" onClick={copyToClipboard}>
                   <Copy className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon">
-                  <a href="/">
-                    <ArrowLeft className="h-4 w-4" />
-                  </a>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => location.reload()}
+                >
+                  <ArrowLeft className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
