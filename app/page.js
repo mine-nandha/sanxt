@@ -49,26 +49,12 @@ export default function Component() {
 
   useEffect(() => {
     // Check if all necessary notes and data are filled before setting isLoading to false
-    if (
-      sanxtNotes &&
-      esbNotes &&
-      rmcData &&
-      sanxtData &&
-      selectedStreets.length &&
-      customersCount
-    ) {
+    if (sanxtNotes && esbNotes && rmcData && sanxtData && customersCount) {
       setIsLoading(false); // All data is ready, loading is complete
     } else {
       setIsLoading(true); // One of the fields is missing, still loading
     }
-  }, [
-    sanxtNotes,
-    esbNotes,
-    rmcData,
-    sanxtData,
-    selectedStreets,
-    customersCount,
-  ]); // Effect depends on these states
+  }, [sanxtNotes, esbNotes, rmcData, sanxtData, customersCount]); // Effect depends on these states
 
   const handleInputSanxt = async () => {
     let img = document.querySelector("#sanxt-notes img");
@@ -142,7 +128,7 @@ export default function Component() {
       node: rmcData.nodeName,
       macAddress: rmcData.macAddress,
       account: rmcData.accountNumber,
-      streets: selectedStreets,
+      streets: selectedStreets.length ? rmcData.streetAddress : selectedStreets,
       zip: rmcData.zip,
       customersCount,
     };
@@ -158,7 +144,11 @@ export default function Component() {
     setSubject(
       `|${priority}|${areaCode}|${time}|BRK|SANXT|Co ${rmcData.region}-${
         rmcData.area
-      }-${selectedStreets.join(", ")}`
+      }-${
+        selectedStreets.length
+          ? rmcData.streetAddress
+          : selectedStreets.join(", ")
+      }`
     );
     setShowGeneratedContent(true);
   };
