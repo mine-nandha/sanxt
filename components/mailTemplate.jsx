@@ -114,7 +114,7 @@ export function MailTemplate({
               border: "1px solid black",
             }}
           >
-            {streets.join(", ")}
+            {streets}
           </td>
         </tr>
         <tr>

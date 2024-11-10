@@ -10,14 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Moon, Sun, Copy, ArrowLeft, Mail } from "lucide-react";
+
+import { Moon, Sun, ArrowLeft, Mail } from "lucide-react";
 import {
   extractInformation,
   getAreaCodeFor,
@@ -27,6 +21,7 @@ import { performOCR } from "@/lib/sanxt";
 import { getMailTemplateHtml } from "@/components/mailTemplate";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import CopyButton from "@/components/copyButton";
 
 export default function Component() {
   const [sanxtNotes, setSanxtNotes] = useState("");
@@ -39,7 +34,7 @@ export default function Component() {
   const [isLoading, setIsLoading] = useState(true);
   const [sanxtData, setSanxtData] = useState([]);
   const [selectedStreets, setSelectedStreets] = useState([]);
-  const [subject, setSubject] = useState();
+  const [subject, setSubject] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [customersCount, setCustomersCount] = useState(0);
 
@@ -107,28 +102,23 @@ export default function Component() {
   };
 
   const handleCustomersCount = (event) => {
-    // Ensure that only numbers are accepted
     const value = event.target.value;
     setCustomersCount(value);
   };
-  const copyToClipboard = async () => {
-    try {
-      const htmlContent = document.querySelector("#mailContent").innerHTML;
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      const clipboardItem = new ClipboardItem({ "text/html": blob });
-      await navigator.clipboard.write([clipboardItem]);
-      console.log("Content copied with images!");
-    } catch (error) {
-      console.error("Failed to copy content:", error);
-    }
+  const handleSubjectChange = (event) => {
+    const value = event.target.value;
+    setSubject(value);
   };
+
   const generateEmail = () => {
     const data = {
       esb: isChecked ? "ESB Found" : "No ESB",
       node: rmcData.nodeName,
       macAddress: rmcData.macAddress,
       account: rmcData.accountNumber,
-      streets: selectedStreets.length ? rmcData.streetAddress : selectedStreets,
+      streets: selectedStreets.length
+        ? selectedStreets.join(", ")
+        : rmcData.streetAddress,
       zip: rmcData.zip,
       customersCount,
     };
@@ -146,8 +136,8 @@ export default function Component() {
         rmcData.area
       }-${
         selectedStreets.length
-          ? rmcData.streetAddress
-          : selectedStreets.join(", ")
+          ? selectedStreets.join(", ")
+          : rmcData.streetAddress
       }`
     );
     setShowGeneratedContent(true);
@@ -178,55 +168,6 @@ export default function Component() {
       <div className="container mx-auto p-8">
         {!showGeneratedContent ? (
           <>
-            <div className="flex justify-end mb-8 space-x-4">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="bg-red-600 text-white hover:bg-red-700"
-                  >
-                    Upload Excel
-                  </Button>
-                </DialogTrigger>
-                <DialogContent
-                  className={`sm:max-w-[425px] ${
-                    isDarkMode
-                      ? "bg-gray-800 text-white"
-                      : "bg-white text-gray-900"
-                  }`}
-                >
-                  <DialogHeader>
-                    <DialogTitle>Upload Excel File</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <label htmlFor="excel-file" className="text-right">
-                        Excel File
-                      </label>
-                      <input
-                        id="excel-file"
-                        type="file"
-                        accept=".xlsx,.xls"
-                        className="col-span-3"
-                      />
-                    </div>
-                  </div>
-                  <Button
-                    type="submit"
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    Upload
-                  </Button>
-                </DialogContent>
-              </Dialog>
-              <Button
-                variant="outline"
-                className="bg-red-600 text-white hover:bg-red-700"
-              >
-                Download Excel
-              </Button>
-            </div>
-
             <Card
               className={`mb-8 ${
                 isDarkMode
@@ -240,6 +181,20 @@ export default function Component() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="customer-count"
+                    className="block text-sm font-medium mb-1"
+                  >
+                    Customer Count
+                  </label>
+                  <Input
+                    name="customer-count"
+                    type="number"
+                    value={customersCount}
+                    onChange={handleCustomersCount}
+                  />
+                </div>
                 <div>
                   <label
                     htmlFor="sanxt-notes"
@@ -297,20 +252,6 @@ export default function Component() {
                         ? "bg-gray-700 text-white border-gray-600"
                         : "bg-blue-50 text-gray-900 border-gray-300"
                     }
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="customer-count"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Customer Count
-                  </label>
-                  <Input
-                    name="customer-count"
-                    type="number"
-                    value={customersCount}
-                    onChange={handleCustomersCount}
                   />
                 </div>
                 <div>
@@ -381,9 +322,6 @@ export default function Component() {
                     <Mail className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button variant="outline" size="icon" onClick={copyToClipboard}>
-                  <Copy className="h-4 w-4" />
-                </Button>
                 <Button
                   variant="outline"
                   size="icon"
@@ -394,10 +332,27 @@ export default function Component() {
               </div>
             </CardHeader>
             <CardContent>
+              <div className="my-4">
+                <label
+                  htmlFor="subject"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Edit Subject:
+                </label>
+                <Input
+                  name="subject"
+                  value={subject}
+                  onChange={handleSubjectChange}
+                />
+              </div>
+              <label className="block text-sm font-medium mb-1">
+                Copy the below content:
+              </label>
               <div
-                className={`whitespace-pre-wrap p-6 rounded bg-white text-black border border-gray-300`}
+                className={`whitespace-pre-wrap p-6 rounded bg-white text-black border border-gray-300 relative`}
                 id="mailContent"
               >
+                <CopyButton className="absolute top-2 right-2 z-10" />
                 <div
                   ref={generatedContentRef}
                   contentEditable
