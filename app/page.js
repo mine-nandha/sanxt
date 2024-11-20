@@ -30,13 +30,13 @@ export default function Component() {
   const [generatedContent, setGeneratedContent] = useState();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showGeneratedContent, setShowGeneratedContent] = useState(false);
-  const generatedContentRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sanxtData, setSanxtData] = useState([]);
   const [selectedStreets, setSelectedStreets] = useState([]);
   const [subject, setSubject] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [customersCount, setCustomersCount] = useState(0);
+  const topRef = useRef(null);
 
   useEffect(() => {
     document.body.className = isDarkMode ? "dark" : "light";
@@ -44,12 +44,12 @@ export default function Component() {
 
   useEffect(() => {
     // Check if all necessary notes and data are filled before setting isLoading to false
-    if (sanxtNotes && esbNotes && rmcData && sanxtData && customersCount) {
+    if (sanxtNotes && esbNotes && rmcData && customersCount) {
       setIsLoading(false); // All data is ready, loading is complete
     } else {
       setIsLoading(true); // One of the fields is missing, still loading
     }
-  }, [sanxtNotes, esbNotes, rmcData, sanxtData, customersCount]); // Effect depends on these states
+  }, [sanxtNotes, esbNotes, rmcData, customersCount]); // Effect depends on these states
 
   const handleInputSanxt = async () => {
     let img = document.querySelector("#sanxt-notes img");
@@ -140,6 +140,9 @@ export default function Component() {
           : rmcData.streetAddress
       }`
     );
+    setTimeout(() => {
+      topRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 200);
     setShowGeneratedContent(true);
   };
 
@@ -234,7 +237,9 @@ export default function Component() {
                       </span>
                     ))}
                   </div>
-                ) : null}
+                ) : (
+                  <>No Address Found</>
+                )}
                 <div>
                   <label
                     htmlFor="rmc-data"
@@ -308,6 +313,7 @@ export default function Component() {
                 ? "bg-gray-800 border-red-600"
                 : "bg-white border-red-600"
             }
+            ref={topRef}
           >
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-2xl text-red-500">
@@ -316,10 +322,14 @@ export default function Component() {
               <div className="flex space-x-2">
                 <Button variant="outline" size="icon">
                   <Link
-                    href={`https://outlook.office.com/mail/deeplink/compose?to=NetworkPerformanceTeam@virginmedia.ie;Mail2TicketUpdate@libertyglobal.com&subject=${subject}`}
+                    href={`https://outlook.office.com/mail/deeplink/compose?to=NetworkPerformanceTeam@virginmedia.ie;Mail2TicketUpdate@libertyglobal.com;VNOC@virginmedia.ie&subject=${subject}`}
                     target="_blank"
+                    rel="noopener noreferrer"
+                    passHref
                   >
-                    <Mail className="h-4 w-4" />
+                    <Button asChild variant="outline" size="icon">
+                      <Mail className="h-4 w-4" />
+                    </Button>
                   </Link>
                 </Button>
                 <Button
@@ -354,7 +364,6 @@ export default function Component() {
               >
                 <CopyButton className="absolute top-2 right-2 z-10" />
                 <div
-                  ref={generatedContentRef}
                   contentEditable
                   dangerouslySetInnerHTML={{ __html: generatedContent }}
                 />
