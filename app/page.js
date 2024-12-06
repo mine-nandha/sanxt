@@ -26,6 +26,7 @@ import CopyButton from "@/components/copyButton";
 export default function Component() {
   const [sanxtNotes, setSanxtNotes] = useState("");
   const [esbNotes, setEsbNotes] = useState("");
+  const [rmcImage, setRmcImage] = useState("");
   const [rmcData, setRmcData] = useState();
   const [generatedContent, setGeneratedContent] = useState();
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -44,12 +45,12 @@ export default function Component() {
 
   useEffect(() => {
     // Check if all necessary notes and data are filled before setting isLoading to false
-    if (sanxtNotes && esbNotes && rmcData && customersCount) {
+    if (sanxtNotes && esbNotes && rmcData && customersCount && rmcImage) {
       setIsLoading(false); // All data is ready, loading is complete
     } else {
       setIsLoading(true); // One of the fields is missing, still loading
     }
-  }, [sanxtNotes, esbNotes, rmcData, customersCount]); // Effect depends on these states
+  }, [sanxtNotes, esbNotes, rmcData, customersCount, rmcImage]); // Effect depends on these states
 
   const handleInputSanxt = async () => {
     let img = document.querySelector("#sanxt-notes img");
@@ -73,6 +74,15 @@ export default function Component() {
       setEsbNotes(img.outerHTML);
     } else {
       setEsbNotes("");
+    }
+  };
+
+  const handleInputRmcImage = () => {
+    let img = document.querySelector("#rmc-image img");
+    if (img && img.tagName === "IMG") {
+      setRmcImage(img.outerHTML);
+    } else {
+      setRmcImage("");
     }
   };
 
@@ -290,6 +300,24 @@ export default function Component() {
                     ESB Outage Found
                   </div>
                 </div>
+                <div>
+                  <label
+                    htmlFor="rmc-image"
+                    className="block text-sm font-medium mb-1"
+                  >
+                    RMC Image
+                  </label>
+                  <div
+                    id="rmc-image"
+                    contentEditable
+                    onInput={handleInputRmcImage}
+                    className={`mb-2 p-2 rounded min-h-[100px] focus:outline-none focus:ring-2 focus:ring-red-500 ${
+                      isDarkMode
+                        ? "bg-gray-700 text-white border-gray-600"
+                        : "bg-blue-50 text-gray-900 border-gray-300"
+                    }`}
+                  />
+                </div>
               </CardContent>
               <CardFooter>
                 <Button
@@ -377,6 +405,12 @@ export default function Component() {
                   contentEditable
                   dangerouslySetInnerHTML={{
                     __html: esbNotes,
+                  }}
+                />
+                <div
+                  contentEditable
+                  dangerouslySetInnerHTML={{
+                    __html: rmcImage,
                   }}
                 />
               </div>
