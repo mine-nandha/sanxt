@@ -45,12 +45,12 @@ export default function Component() {
 
   useEffect(() => {
     // Check if all necessary notes and data are filled before setting isLoading to false
-    if (sanxtNotes && esbNotes && rmcData && customersCount && rmcImage) {
+    if (sanxtNotes && esbNotes && rmcData && customersCount) {
       setIsLoading(false); // All data is ready, loading is complete
     } else {
       setIsLoading(true); // One of the fields is missing, still loading
     }
-  }, [sanxtNotes, esbNotes, rmcData, customersCount, rmcImage]); // Effect depends on these states
+  }, [sanxtNotes, esbNotes, rmcData, customersCount]); // Effect depends on these states
 
   const handleInputSanxt = async () => {
     let img = document.querySelector("#sanxt-notes img");
