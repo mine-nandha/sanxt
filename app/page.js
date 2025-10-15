@@ -22,6 +22,7 @@ import { getMailTemplateHtml } from "@/components/mailTemplate";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import CopyButton from "@/components/copyButton";
+import PasteButton from "@/components/pasteButton";
 
 export default function Component() {
   const [sanxtNotes, setSanxtNotes] = useState("");
@@ -37,6 +38,7 @@ export default function Component() {
   const [subject, setSubject] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [customersCount, setCustomersCount] = useState(0);
+  const [isConverted, setIsConverted] = useState(false);
   const topRef = useRef(null);
 
   useEffect(() => {
@@ -44,27 +46,26 @@ export default function Component() {
   }, [isDarkMode]);
 
   useEffect(() => {
-    // Check if all necessary notes and data are filled before setting isLoading to false
     if (sanxtNotes && esbNotes && rmcData && customersCount) {
-      setIsLoading(false); // All data is ready, loading is complete
+      setIsLoading(false);
     } else {
-      setIsLoading(true); // One of the fields is missing, still loading
+      setIsLoading(true);
     }
-  }, [sanxtNotes, esbNotes, rmcData, customersCount]); // Effect depends on these states
+  }, [sanxtNotes, esbNotes, rmcData, customersCount]);
 
   const handleInputSanxt = async () => {
     let img = document.querySelector("#sanxt-notes img");
     if (img && img.tagName === "IMG") {
-      setSanxtNotes(img.outerHTML); // Set the image HTML
+      setSanxtNotes(img.outerHTML);
       try {
-        const ocrData = await performOCR(img.src); // Wait for the OCR to complete
-        setSanxtData(ocrData); // Set the OCR result once it's ready
+        const ocrData = await performOCR(img.src);
+        setSanxtData(ocrData);
       } catch (error) {
         console.error("Error during OCR:", error);
-        setSanxtData([]); // Optionally set empty data if OCR fails
+        setSanxtData([]);
       }
     } else {
-      setSanxtData([]); // Clear if there's no image
+      setSanxtData([]);
     }
   };
 
@@ -114,7 +115,9 @@ export default function Component() {
   const handleCustomersCount = (event) => {
     const value = event.target.value;
     setCustomersCount(value);
+    setIsConverted(false);
   };
+
   const handleSubjectChange = (event) => {
     const value = event.target.value;
     setSubject(value);
@@ -201,20 +204,36 @@ export default function Component() {
                   >
                     Customer Count
                   </label>
-                  <Input
-                    name="customer-count"
-                    type="number"
-                    value={customersCount}
-                    onChange={handleCustomersCount}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      name="customer-count"
+                      type="number"
+                      value={customersCount}
+                      onChange={handleCustomersCount}
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setCustomersCount(Math.round(customersCount * 0.75));
+                        setIsConverted(true);
+                      }}
+                      className="whitespace-nowrap"
+                      disabled={isConverted}
+                    >
+                      × 0.75
+                    </Button>
+                  </div>
                 </div>
                 <div>
-                  <label
-                    htmlFor="sanxt-notes"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    SANXT Image
-                  </label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label
+                      htmlFor="sanxt-notes"
+                      className="block text-sm font-medium"
+                    >
+                      SANXT Image
+                    </label>
+                    <PasteButton targetId="sanxt-notes" />
+                  </div>
                   <div
                     id="sanxt-notes"
                     contentEditable
@@ -251,12 +270,15 @@ export default function Component() {
                   <>No Address Found</>
                 )}
                 <div>
-                  <label
-                    htmlFor="rmc-data"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    RMC Mapping Tool Data
-                  </label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label
+                      htmlFor="rmc-data"
+                      className="block text-sm font-medium mb-1"
+                    >
+                      RMC Mapping Tool Data
+                    </label>
+                    <PasteButton targetId="rmc-data" />
+                  </div>
                   <Textarea
                     id="rmc-data"
                     onInput={handleInputRmc}
@@ -270,12 +292,15 @@ export default function Component() {
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="esb-notes"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    ESB Image
-                  </label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label
+                      htmlFor="esb-notes"
+                      className="block text-sm font-medium"
+                    >
+                      ESB Image
+                    </label>
+                    <PasteButton targetId="esb-notes" />
+                  </div>
                   <div
                     id="esb-notes"
                     contentEditable
@@ -295,18 +320,21 @@ export default function Component() {
                       type="checkbox"
                       name="esbfound"
                       checked={isChecked}
-                      onChange={(e) => setIsChecked(e.target.checked)} // updates checkbox state
+                      onChange={(e) => setIsChecked(e.target.checked)}
                     />
                     ESB Outage Found
                   </div>
                 </div>
                 <div>
-                  <label
-                    htmlFor="rmc-image"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    RMC Image
-                  </label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label
+                      htmlFor="rmc-image"
+                      className="block text-sm font-medium"
+                    >
+                      RMC Image
+                    </label>
+                    <PasteButton targetId="rmc-image" />
+                  </div>
                   <div
                     id="rmc-image"
                     contentEditable
