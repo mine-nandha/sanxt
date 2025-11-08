@@ -17,10 +17,19 @@ RUN bun run build
 FROM oven/bun:latest AS runtime
 WORKDIR /app
 
-# Create non-root user for safety (some base images already have one; this is safe)
-RUN addgroup -S app && adduser -S app -G app || true
+# Create non-root user for safety (robust across Debian/Alpine)
+# - prefers groupadd/useradd, falls back to addgroup/adduser, falls back to /etc/passwd entry
+RUN set -eux; \
+    if command -v groupadd >/dev/null 2>&1 && command -v useradd >/dev/null 2>&1; then \
+      groupadd -r app && useradd -r -g app -d /app -s /sbin/nologin app; \
+    elif command -v addgroup >/dev/null 2>&1 && command -v adduser >/dev/null 2>&1; then \
+      addgroup -S app && adduser -S -G app -h /app -s /bin/sh app; \
+    else \
+      echo "app:x:1000:1000::/app:/sbin/nologin" >> /etc/passwd; \
+    fi; \
+    mkdir -p /app && chown -R app:app /app
 
-# Copy only what we need from builder (node_modules + built assets + package.json)
+# Copy files from builder (user now exists so --chown is safe)
 COPY --chown=app:app --from=builder /app /app
 
 ENV NODE_ENV=production
@@ -33,5 +42,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-# Start command — expects "start" script in package.json: "start": "bun index.js" or similar
+# Start command — expects "start" script in package.json
 CMD ["bun", "run", "start"]
