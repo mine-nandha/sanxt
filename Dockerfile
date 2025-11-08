@@ -11,7 +11,7 @@ RUN bun install --production
 # Copy rest of app and run optional build step (if you have one)
 COPY . .
 # If you have a build script (e.g. `bun run build`) uncomment next line
-# RUN bun run build
+RUN bun run build
 
 # --- Runtime: minimal bun image with non-root user ---
 FROM oven/bun:latest AS runtime
