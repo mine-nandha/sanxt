@@ -2,23 +2,21 @@
 FROM oven/bun:latest AS builder
 WORKDIR /app
 
-# Copy lockfile & package manifest first to leverage docker cache for deps
+# copy manifest first for cache
 COPY package.json bun.lockb* ./
 
-# Install only production deps (fast, smaller)
-RUN bun install --production
+# install full deps (dev + prod) so next build works
+RUN bun install --frozen-lockfile
 
-# Copy rest of app and run optional build step (if you have one)
+# copy source and build
 COPY . .
-# If you have a build script (e.g. `bun run build`) uncomment next line
 RUN bun run build
 
-# --- Runtime: minimal bun image with non-root user ---
+# --- Runtime: minimal image with non-root user ---
 FROM oven/bun:latest AS runtime
 WORKDIR /app
 
-# Create non-root user for safety (robust across Debian/Alpine)
-# - prefers groupadd/useradd, falls back to addgroup/adduser, falls back to /etc/passwd entry
+# create non-root user (robust across bases) BEFORE copying files
 RUN set -eux; \
     if command -v groupadd >/dev/null 2>&1 && command -v useradd >/dev/null 2>&1; then \
       groupadd -r app && useradd -r -g app -d /app -s /sbin/nologin app; \
@@ -29,14 +27,21 @@ RUN set -eux; \
     fi; \
     mkdir -p /app && chown -R app:app /app
 
-# Copy files from builder (user now exists so --chown is safe)
-COPY --chown=app:app --from=builder /app /app
+# copy only runtime artifacts from builder
+COPY --chown=app:app --from=builder /app/.next ./.next
+COPY --chown=app:app --from=builder /app/public ./public
+COPY --chown=app:app --from=builder /app/package.json ./package.json
+COPY --chown=app:app --from=builder /app/bun.lockb ./bun.lockb
+COPY --chown=app:app --from=builder /app/node_modules ./node_modules
 
 ENV NODE_ENV=production
 USER app
 
-# Expose the port your app listens on
 EXPOSE 3000
+ENV PORT=3000
 
-# Start command — expects "start" script in package.json
+# Optional: re-enable when app is stable
+# HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+#   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
 CMD ["bun", "run", "start"]
