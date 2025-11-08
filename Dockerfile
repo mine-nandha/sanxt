@@ -38,9 +38,5 @@ USER app
 # Expose the port your app listens on
 EXPOSE 3000
 
-# Basic healthcheck (adjust path/port to your app)
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
-
 # Start command — expects "start" script in package.json
 CMD ["bun", "run", "start"]
