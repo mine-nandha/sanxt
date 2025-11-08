@@ -29,7 +29,7 @@ RUN set -eux; \
 
 # copy only runtime artifacts from builder
 COPY --chown=app:app --from=builder /app/.next ./.next
-COPY --chown=app:app --from=builder /app/public ./public
+# COPY --chown=app:app --from=builder /app/public ./public
 COPY --chown=app:app --from=builder /app/package.json ./package.json
 COPY --chown=app:app --from=builder /app/bun.lockb* ./
 COPY --chown=app:app --from=builder /app/node_modules ./node_modules
