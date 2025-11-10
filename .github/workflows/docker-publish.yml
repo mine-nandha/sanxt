@@ -82,6 +82,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           
+      - name: Wait for registry propagation
+        if: ${{ github.event_name != 'pull_request' && success() }}
+        run: sleep 10
+          
       - name: Cleanup old GHCR images
         if: ${{ github.event_name != 'pull_request' }}
         uses: actions/delete-package-versions@v5
@@ -89,9 +93,7 @@ jobs:
           package-name: sanxt
           package-type: container
           min-versions-to-keep: 2
-          num-old-versions-to-delete: 1
-          delete-only-pre-release-versions: false
-          delete-only-untagged-versions: false
+          delete-only-untagged-versions: true
           token: ${{ secrets.CLEANUP_TOKEN || github.token }}
 
       # Sign the resulting Docker image digest except on PRs.
