@@ -89,6 +89,10 @@ jobs:
           package-name: ${{ env.IMAGE_NAME }}
           package-type: container
           min-versions-to-keep: 2
+          num-old-versions-to-delete: 1
+          delete-only-pre-release-versions: false
+          delete-only-untagged-versions: false
+          token: ${{ secrets.CLEANUP_TOKEN || github.token }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
