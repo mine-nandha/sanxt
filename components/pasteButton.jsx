@@ -63,15 +63,17 @@ export default function PasteButton({ targetId, className = "" }) {
 		<Button
 			variant="outline"
 			size="icon"
-			className={className}
+			className={`${className} transition-all duration-200 hover:scale-110 active:scale-95 ${isPasted ? "bg-green-100 dark:bg-green-900 animate-pulse-glow" : ""}`}
 			onClick={pasteFromClipboard}
 			aria-label={isPasted ? "Pasted" : "Paste from clipboard"}
 		>
-			{isPasted ? (
-				<Check className="h-4 w-4" />
-			) : (
-				<Clipboard className="h-4 w-4" />
-			)}
+			<div className="transition-transform duration-200">
+				{isPasted ? (
+					<Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+				) : (
+					<Clipboard className="h-4 w-4" />
+				)}
+			</div>
 		</Button>
 	);
 }

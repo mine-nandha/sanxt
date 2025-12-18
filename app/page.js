@@ -162,37 +162,43 @@ export default function Component() {
 
 	return (
 		<div
-			className={`min-h-screen ${
-				isDarkMode ? "bg-black text-white" : "bg-blue-100 text-gray-900"
+			className={`min-h-screen transition-colors duration-300 ${
+				isDarkMode
+					? "bg-gradient-to-br from-gray-900 to-black text-white"
+					: "bg-gradient-page text-gray-900"
 			}`}
 		>
-			<nav className="bg-red-600 p-4 flex justify-between items-center">
-				<h1 className="text-2xl font-bold text-white">SANXT</h1>
+			<nav className="bg-gradient-primary p-4 flex justify-between items-center shadow-colored sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
+				<h1 className="text-2xl font-bold text-white drop-shadow-lg animate-fade-in">
+					SANXT
+				</h1>
 				<Button
 					variant="outline"
 					size="icon"
 					onClick={() => setIsDarkMode(!isDarkMode)}
-					className="bg-transparent border-white text-white hover:bg-red-700"
+					className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:scale-110 transition-all duration-200 backdrop-blur-sm"
 				>
-					{isDarkMode ? (
-						<Sun className="h-[1.2rem] w-[1.2rem]" />
-					) : (
-						<Moon className="h-[1.2rem] w-[1.2rem]" />
-					)}
+					<div className="transition-transform duration-300">
+						{isDarkMode ? (
+							<Sun className="h-[1.2rem] w-[1.2rem]" />
+						) : (
+							<Moon className="h-[1.2rem] w-[1.2rem]" />
+						)}
+					</div>
 				</Button>
 			</nav>
 
-			<div className="container mx-auto p-8">
+			<div className="container mx-auto p-8 animate-fade-in">
 				{!showGeneratedContent ? (
 					<Card
-						className={`mb-8 ${
+						className={`mb-8 animate-slide-up ${
 							isDarkMode
-								? "bg-gray-800 border-red-600"
-								: "bg-white border-red-600"
+								? "glass-card border-pink-500/30"
+								: "bg-white border-red-300 shadow-colored"
 						}`}
 					>
 						<CardHeader>
-							<CardTitle className="text-2xl text-red-500">
+							<CardTitle className="text-2xl text-gradient animate-fade-in">
 								Input Data
 							</CardTitle>
 						</CardHeader>
@@ -238,26 +244,26 @@ export default function Component() {
 									id="sanxt-notes"
 									contentEditable
 									onInput={handleInputSanxt}
-									className={`mb-2 p-2 rounded min-h-[100px] focus:outline-none focus:ring-2 focus:ring-red-500 ${
+									className={`mb-2 p-3 rounded-lg min-h-[100px] border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:shadow-glow ${
 										isDarkMode
-											? "bg-gray-700 text-white border-gray-600"
-											: "bg-blue-50 text-gray-900 border-gray-300"
+											? "bg-gray-800/50 text-white border-gray-600 hover:border-gray-500"
+											: "bg-blue-50/50 text-gray-900 border-gray-300 hover:border-gray-400"
 									}`}
 								/>
 							</div>
 							{sanxtData ? (
 								<div
 									id="streets"
-									className="flex flex-wrap gap-2 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+									className="flex flex-wrap gap-2 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 animate-fade-in"
 								>
 									{sanxtData.map((street) => (
 										<span
-											className="flex items-center px-2 cursor-pointer select-none"
+											className="flex items-center px-3 py-2 cursor-pointer select-none rounded-md transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105"
 											key={street}
 											onKeyUp={handleStreetSelection}
 										>
 											<input
-												className="scale-125 mx-2 cursor-pointer"
+												className="scale-125 mx-2 cursor-pointer accent-pink-500"
 												type="checkbox"
 												name="streets"
 												value={street}
@@ -286,8 +292,8 @@ export default function Component() {
 									placeholder="Paste RMC Mapping Tool Data here"
 									className={
 										isDarkMode
-											? "bg-gray-700 text-white border-gray-600"
-											: "bg-blue-50 text-gray-900 border-gray-300"
+											? "bg-gray-800/50 text-white border-gray-600 hover:border-gray-500"
+											: "bg-blue-50/50 text-gray-900 border-gray-300 hover:border-gray-400"
 									}
 								/>
 							</div>
@@ -305,10 +311,10 @@ export default function Component() {
 									id="esb-notes"
 									contentEditable
 									onInput={handleInputEsb}
-									className={`mb-2 p-2 rounded min-h-[100px] focus:outline-none focus:ring-2 focus:ring-red-500 ${
+									className={`mb-2 p-3 rounded-lg min-h-[100px] border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:shadow-glow ${
 										isDarkMode
-											? "bg-gray-700 text-white border-gray-600"
-											: "bg-blue-50 text-gray-900 border-gray-300"
+											? "bg-gray-800/50 text-white border-gray-600 hover:border-gray-500"
+											: "bg-blue-50/50 text-gray-900 border-gray-300 hover:border-gray-400"
 									}`}
 								/>
 								<div
@@ -339,10 +345,10 @@ export default function Component() {
 									id="rmc-image"
 									contentEditable
 									onInput={handleInputRmcImage}
-									className={`mb-2 p-2 rounded min-h-[100px] focus:outline-none focus:ring-2 focus:ring-red-500 ${
+									className={`mb-2 p-3 rounded-lg min-h-[100px] border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:shadow-glow ${
 										isDarkMode
-											? "bg-gray-700 text-white border-gray-600"
-											: "bg-blue-50 text-gray-900 border-gray-300"
+											? "bg-gray-800/50 text-white border-gray-600 hover:border-gray-500"
+											: "bg-blue-50/50 text-gray-900 border-gray-300 hover:border-gray-400"
 									}`}
 								/>
 							</div>
@@ -350,11 +356,11 @@ export default function Component() {
 						<CardFooter>
 							<Button
 								onClick={generateEmail}
-								className="w-full bg-red-600 hover:bg-red-700 text-white flex justify-center items-center"
+								className="w-full bg-gradient-primary hover:shadow-glow text-white flex justify-center items-center transition-all duration-200 hover:scale-105 font-semibold text-base py-6"
 								disabled={isLoading}
 							>
 								{isLoading ? (
-									<div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+									<div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
 								) : (
 									"Generate Mail"
 								)}
@@ -365,13 +371,13 @@ export default function Component() {
 					<Card
 						className={
 							isDarkMode
-								? "bg-gray-800 border-red-600"
-								: "bg-white border-red-600"
+								? "glass-card border-pink-500/30 animate-slide-up"
+								: "bg-white border-red-300 shadow-colored animate-slide-up"
 						}
 						ref={topRef}
 					>
 						<CardHeader className="flex flex-row items-center justify-between">
-							<CardTitle className="text-2xl text-red-500">
+							<CardTitle className="text-2xl text-gradient">
 								Generated Email Content
 							</CardTitle>
 							<div className="flex space-x-2">
@@ -390,6 +396,7 @@ export default function Component() {
 								<Button
 									variant="outline"
 									size="icon"
+									className="hover:scale-110 transition-all duration-200"
 									onClick={() => location.reload()}
 								>
 									<ArrowLeft className="h-4 w-4" />
@@ -414,7 +421,7 @@ export default function Component() {
 								Copy the below content:
 							</p>
 							<div
-								className={`whitespace-pre-wrap p-6 rounded bg-white text-black border border-gray-300 relative`}
+								className={`whitespace-pre-wrap p-6 rounded-lg bg-white text-black border-2 border-gray-300 relative shadow-lg transition-all duration-200 hover:shadow-xl`}
 								id="mailContent"
 							>
 								<CopyButton className="absolute top-2 right-2 z-10" />
