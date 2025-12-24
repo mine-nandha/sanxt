@@ -1,5 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
+import Navigation from "@/components/layout/Navigation";
 import { ThemeProvider } from "@/lib/context/ThemeContext";
 
 const geistSans = localFont({
@@ -24,7 +26,10 @@ export default function RootLayout({ children }) {
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				<ThemeProvider>{children}</ThemeProvider>
+				<ThemeProvider>
+					<Navigation />
+					<ErrorBoundary>{children}</ErrorBoundary>
+				</ThemeProvider>
 			</body>
 		</html>
 	);
