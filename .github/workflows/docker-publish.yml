@@ -86,20 +86,18 @@ jobs:
         if: ${{ github.event_name != 'pull_request' && success() }}
         run: sleep 10
           
-      - name: Cleanup old GHCR images and signatures
+      - name: Cleanup old GHCR images
         if: ${{ github.event_name != 'pull_request' }}
         uses: actions/delete-package-versions@v5
         with:
           package-name: sanxt
           package-type: container
-          min-versions-to-keep: 2
-          # This regex targets untagged images AND signature/attestation files
+          min-versions-to-keep: 4
+          # This tells the action NOT to delete versions that look like standard tags
+          # It will effectively target untagged images and .sig/.att files
+          ignore-versions: '^(v?\d+\.\d+\.\d+|main)$' 
           delete-only-untagged-versions: false
-          version-selection-strategy: 'older_than'
-          # This regex matches the standard Cosign signature/attestation format
-          version-name-extractions: '^(.*\.sig|.*\.att|.*sha256-.*)$' 
           token: ${{ secrets.CLEANUP_TOKEN || github.token }}
-
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
