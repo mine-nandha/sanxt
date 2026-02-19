@@ -10,10 +10,10 @@ export function MailTemplate({
 }) {
 	return (
 		<div>
-			Hi NPT,
+			Hi lads,
 			<br />
 			<br />
-			Can you please put on AOP, contact relevant technician and raise FOM.
+			Could you please check this?
 			<br />
 			<br />
 			<table style={{ borderCollapse: "collapse", border: "1px solid black" }}>
